@@ -1,0 +1,74 @@
+version: 2.1
+
+orbs:
+  terraform: circleci/terraform@3
+
+jobs:
+  terratest:
+    docker:
+      - image: cimg/go:1.22
+
+    working_directory: ~/project
+
+    environment:
+      TF_VERSION: "1.7.5"
+      AWS_REGION: "us-west-2"
+      TF_TOKEN_app_terraform_io: $TERRAFORM_CLOUD_API_TOKEN
+
+    steps:
+      - checkout
+
+      # -------------------------
+      # Install Terraform
+      # -------------------------
+      - run:
+          name: Install Terraform
+          command: |
+            sudo apt-get update
+            sudo apt-get install -y unzip
+            curl -LO https://releases.hashicorp.com/terraform/${TF_VERSION}/terraform_${TF_VERSION}_linux_amd64.zip
+            unzip terraform_${TF_VERSION}_linux_amd64.zip
+            sudo mv terraform /usr/local/bin/
+            terraform version
+
+      # -------------------------
+      # Download Go dependencies
+      # -------------------------
+      - run:
+          name: Download Go modules
+          command: |
+            cd test
+            go mod download
+
+      # -------------------------
+      # Terraform init
+      # -------------------------
+      - run:
+          name: Terraform Init
+          command: |
+            cd example/basic
+            terraform init -input=false
+
+      # -------------------------
+      # Terraform plan
+      # -------------------------
+      - run:
+          name: Terraform Plan
+          command: |
+            cd example/basic
+            terraform plan -input=false -out=tfplan     
+
+      # -------------------------
+      # Run Terratest
+      # -------------------------
+      - run:
+          name: Run Terratest
+          command: |
+            cd test
+            go test -v -timeout 30m
+
+workflows:
+  terratest-workflow:
+    jobs:
+      - terratest:
+          context: atyeti
