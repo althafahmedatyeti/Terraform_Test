@@ -9,11 +9,12 @@ jobs:
       - image: cimg/go:1.22
 
     working_directory: ~/project
+    
 
     environment:
       TF_VERSION: "1.7.5"
       AWS_REGION: "us-west-2"
-      TF_TOKEN_app_terraform_io: $TERRAFORM_CLOUD_API_TOKEN
+    
 
     steps:
       - checkout
@@ -21,6 +22,15 @@ jobs:
       # -------------------------
       # Install Terraform
       # -------------------------
+      - run:
+          name: Setup Terraform Token
+          command: |
+            echo "export TF_TOKEN_app_terraform_io=${TERRAFORM_CLOUD_API_TOKEN}" >> $BASH_ENV
+
+      - run:
+          name: Verify Token Loaded
+          command: |
+            echo $TF_TOKEN_app_terraform_io | wc -c     
       - run:
           name: Install Terraform
           command: |

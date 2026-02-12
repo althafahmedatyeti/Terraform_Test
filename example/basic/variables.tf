@@ -54,3 +54,12 @@ variable "service_name" {
   description = "Service name used for naming/tagging."
   default = "aws-ec2"
 }
+variable "master_password" {
+  type        = string
+  description = "Master password for database or service"
+}
+
+variable "consul" {
+  type        = string
+  description = "Consul configuration flag or address"
+}

@@ -3,7 +3,7 @@ terraform {
     organization = "atyeti-inc"
 
     workspaces {
-      prefix = "WAForge-landing-zone"
+      name = "WAForge-landing-zone"
     }
   }
 }
