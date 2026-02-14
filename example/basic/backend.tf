@@ -1,9 +1,9 @@
 terraform {
   backend "remote" {
-    organization = "atyeti-inc"
+    organization = "Althaf_org"
 
     workspaces {
-      name = "WAForge-landing-zone"
+      name = "Terraform_Test"
     }
   }
 }
